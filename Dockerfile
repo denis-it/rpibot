@@ -1,13 +1,11 @@
-FROM python:3.4.6
+FROM python:3.6
 
 MAINTAINER Denis T. <dev@denis-it.com>
 
 WORKDIR /usr/src/rpibot
 
-RUN pip install telepot \
-	&& pip install telepot --upgrade
-
-ENV PYTHONUNBUFFERED 1
+RUN pip install python-telegram-bot \
+	&& pip install python-telegram-bot --upgrade
 
 COPY . .
 
