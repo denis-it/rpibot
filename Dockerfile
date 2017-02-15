@@ -4,8 +4,7 @@ MAINTAINER Denis T. <dev@denis-it.com>
 
 WORKDIR /usr/src/rpibot
 
-RUN pip install python-telegram-bot \
-	&& pip install python-telegram-bot --upgrade
+RUN pip install python-telegram-bot
 
 COPY . .
 

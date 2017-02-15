@@ -22,7 +22,6 @@ case $COMMAND in
 	echo "Usage: $0 [command]" >&2
 	echo "	run     run bot (default)" >&2
 	echo "	sh      run a shell in the container" >&2
-	echo "	help    show this help and exit" >&2
 	exit 1
 	;;
 esac
