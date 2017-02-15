@@ -12,7 +12,8 @@ try:
 	import RPi.GPIO as GPIO
 except:
 	class GPIOStub(object):
-		def __init__(self): self.BOARD = self.IN = self.OUT =self.RPI_INFO = "STUB"
+		def __init__(self):
+			self.BOARD = self.IN = self.OUT = self.RPI_INFO = "[]"
 		def setmode(self, mode): pass
 		def setup(self, pin, direction): pass
 		def output(self, pin, level): pass
@@ -52,8 +53,9 @@ Following commands are available:
 def _with_pin(bot, update, args, fn):
 	try:
 		result = fn(int(args[0]))
-		bot.sendMessage(chat_id=update.message.chat_id, text="Ok.")
-		return result
+		bot.sendMessage(
+			chat_id=update.message.chat_id,
+			text="Ok: %s." % (result if result else "null"))
 	except Exception as e:
 		LOGGER.warn("command error: %s" % e)
 		bot.sendMessage(chat_id=update.message.chat_id, text="Error: %s." % e)
@@ -61,7 +63,9 @@ def _with_pin(bot, update, args, fn):
 
 
 def on_info(bot, update):
-	bot.sendMessage(chat_id=update.message.chat_id, text=GPIO.RPI_INFO)
+	bot.sendMessage(
+		chat_id=update.message.chat_id,
+		text="Ok: %s." % GPIO.RPI_INFO)
 
 
 def on_output(bot, update, args):
