@@ -7,6 +7,8 @@ import logging
 import subprocess
 import time
 
+import RPi.GPIO as GPIO
+
 from telegram import InlineQueryResultArticle, ChatAction, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from uuid import uuid4
@@ -35,7 +37,7 @@ Following commands are available:
 
 
 def on_info(bot, update):
-	bot.sendMessage(chat_id=update.message.chat_id, text="To be implemented.")
+	bot.sendMessage(chat_id=update.message.chat_id, text=GPIO.RPI_INFO)
 
 
 def on_output(bot, update):
@@ -70,6 +72,8 @@ def main():
 
 	config = configparser.ConfigParser()
 	config.read("rpibot.ini")
+
+	GPIO.setmode(GPIO.BOARD)
 
 	updater = Updater(token=config["GENERAL"]["token"])
 	dispatcher = updater.dispatcher
