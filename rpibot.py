@@ -51,7 +51,7 @@ Following commands are available:
 
 def _with_pin(bot, update, args, fn):
 	try:
-		result = fn(args[0])
+		result = fn(int(args[0]))
 		bot.sendMessage(chat_id=update.message.chat_id, text="Ok.")
 		return result
 	except Exception as e:
