@@ -27,4 +27,4 @@ $ ./rpibot.py
 ```
 
 ## Known issues
-If you have found any issue or have feature request - create an issue for it, please. Thanks.
+If you have found a bug or have a feature request - create an issue for it, please. Thanks.
