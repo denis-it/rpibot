@@ -4,18 +4,26 @@ This is a simple Telegram bot that allows you to read and write GPIO logic level
 ## Installation
 For Raspbian distro run following commands on your RPi to install required modules:
 ```
-# aptitude update
-# aptitude install -y -R git python3-pip python3-rpi.gpio
+$ sudo aptitude update
+$ sudo aptitude install -y -R git python3-pip python3-rpi.gpio
 
-# pip3 install python-telegram-bot
+$ sudo pip3 install python-telegram-bot
 
-# git clone https://github.com/denis-it/rpibot.git
+$ git clone https://github.com/denis-it/rpibot.git
+$ cd rpibot
 ```
 
+## Configuration
+1. Copy `rpibot.ini_sample` to `rpibot.ini`.
+1. Paste your [telegram bot token](https://core.telegram.org/bots#3-how-do-i-create-a-bot) in place of `YOUR_TOKEN_HERE` string.
+```
+$ cp rpibot.ini_sample rpibot.ini
+$ editor rpibot.ini
+```
 ## Start
+Just run `rpibot.py` script:
 ```
-# cd rpibot
-# ./rpibot.py
+$ ./rpibot.py
 ```
 
 ## Known issues
