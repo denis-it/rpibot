@@ -1,3 +1,5 @@
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
 # rpibot
 This is a simple Telegram bot that allows you to read and write GPIO logic levels of your Raspberry Pi.
 
