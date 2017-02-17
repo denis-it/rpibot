@@ -11,15 +11,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 try:
 	import RPi.GPIO as GPIO
 except:
-	class GPIOStub(object):
-		def __init__(self):
-			self.BOARD = self.IN = self.OUT = self.RPI_INFO = "[]"
-		def setmode(self, mode): pass
-		def setup(self, pin, direction): pass
-		def output(self, pin, level): pass
-		def input(self, pin): pass
-		def cleanup(self): pass
-	GPIO = GPIOStub()
+	import gpiostub as GPIO
 
 
 logging.basicConfig(
