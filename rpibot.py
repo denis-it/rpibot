@@ -36,19 +36,26 @@ Following commands are available:
 /high PIN - set high level on the pin
 /low PIN - set low level on the pin
 /get PIN - get logic level on the pin
+/watch PIN - subscribe for level changes on the pin
 """)
 
 
 def _with_pin(bot, update, args, fn):
+	def reply(text):
+		bot.sendMessage(chat_id=update.message.chat_id, text=text)
+
 	try:
-		result = fn(int(args[0]))
-		bot.sendMessage(
-			chat_id=update.message.chat_id,
-			text="Ok: %s." % (result if result else "done"))
+		result = fn(reply, int(args[0]))
+		reply("Ok: %s." % (result if result else "done"))
 	except Exception as e:
 		LOGGER.warn("command error: %s" % e)
-		bot.sendMessage(chat_id=update.message.chat_id, text="Error: %s." % e)
+		reply("Error: %s." % e)
 		on_help(bot, update)
+
+
+def _remove_event_detect(pin):
+	try: GPIO.remove_event_detect(pin)
+	except: pass
 
 
 def on_info(bot, update):
@@ -58,26 +65,39 @@ def on_info(bot, update):
 
 
 def on_high(bot, update, args):
-	def _handler(pin):
-		GPIO.remove_event_detect(pin)
+	def _handler(reply, pin):
+		_remove_event_detect(pin)
 		GPIO.setup(pin, GPIO.OUT, initial=GPIO.HIGH)
 
 	_with_pin(bot, update, args, _handler)
 
 
 def on_low(bot, update, args):
-	def _handler(pin):
-		GPIO.remove_event_detect(pin)
+	def _handler(reply, pin):
+		_remove_event_detect(pin)
 		GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
 
 	_with_pin(bot, update, args, _handler)
 
 
 def on_get(bot, update, args):
-	def _handler(pin):
+	def _handler(reply, pin):
 		GPIO.setup(pin, GPIO.IN)
 		result = GPIO.input(pin)
 		return (result if result else "0")
+
+	_with_pin(bot, update, args, _handler)
+
+
+def on_watch(bot, update, args):
+	def _handler(reply, pin):
+		def _cb(pin):
+			result = GPIO.input(pin)
+			reply("%s changed to %s." % (pin, result if result else 0))
+
+		GPIO.setup(pin, GPIO.IN)
+		_remove_event_detect(pin)
+		GPIO.add_event_detect(pin, GPIO.BOTH, _cb, bouncetime=200)
 
 	_with_pin(bot, update, args, _handler)
 
@@ -102,6 +122,7 @@ def main():
 	dispatcher.add_handler(CommandHandler("high", on_high, pass_args=True))
 	dispatcher.add_handler(CommandHandler("low", on_low, pass_args=True))
 	dispatcher.add_handler(CommandHandler("get", on_get, pass_args=True))
+	dispatcher.add_handler(CommandHandler("watch", on_watch, pass_args=True))
 
 	dispatcher.add_handler(MessageHandler(Filters.all, on_help))
 
