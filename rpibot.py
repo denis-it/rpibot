@@ -33,9 +33,6 @@ def on_help(bot, update):
 Following commands are available:
 /info - get information about RPi board
 
-/output PIN - configure GPIO pin as output
-/input PIN - configure GPIO pin as input
-
 /high PIN - set high level on the pin
 /low PIN - set low level on the pin
 /get PIN - get logic level on the pin
@@ -47,7 +44,7 @@ def _with_pin(bot, update, args, fn):
 		result = fn(int(args[0]))
 		bot.sendMessage(
 			chat_id=update.message.chat_id,
-			text="Ok: %s." % (result if result else "null"))
+			text="Ok: %s." % (result if result else "done"))
 	except Exception as e:
 		LOGGER.warn("command error: %s" % e)
 		bot.sendMessage(chat_id=update.message.chat_id, text="Error: %s." % e)
@@ -60,24 +57,29 @@ def on_info(bot, update):
 		text="Ok: %s." % GPIO.RPI_INFO)
 
 
-def on_output(bot, update, args):
-	_with_pin(bot, update, args, lambda pin: GPIO.setup(pin, GPIO.OUT))
-
-
-def on_input(bot, update, args):
-	_with_pin(bot, update, args, lambda pin: GPIO.setup(pin, GPIO.IN))
-
-
 def on_high(bot, update, args):
-	_with_pin(bot, update, args, lambda pin: GPIO.output(pin, True))
+	def _handler(pin):
+		GPIO.remove_event_detect(pin)
+		GPIO.setup(pin, GPIO.OUT, initial=GPIO.HIGH)
+
+	_with_pin(bot, update, args, _handler)
 
 
 def on_low(bot, update, args):
-	_with_pin(bot, update, args, lambda pin: GPIO.output(pin, False))
+	def _handler(pin):
+		GPIO.remove_event_detect(pin)
+		GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+
+	_with_pin(bot, update, args, _handler)
 
 
 def on_get(bot, update, args):
-	_with_pin(bot, update, args, lambda pin: GPIO.input(pin))
+	def _handler(pin):
+		GPIO.setup(pin, GPIO.IN)
+		result = GPIO.input(pin)
+		return (result if result else "0")
+
+	_with_pin(bot, update, args, _handler)
 
 
 def on_error(bot, update, error):
@@ -97,8 +99,6 @@ def main():
 	dispatcher.add_handler(CommandHandler("start", on_start))
 	dispatcher.add_handler(CommandHandler("help", on_help))
 	dispatcher.add_handler(CommandHandler("info", on_info))
-	dispatcher.add_handler(CommandHandler("output", on_output, pass_args=True))
-	dispatcher.add_handler(CommandHandler("input", on_input, pass_args=True))
 	dispatcher.add_handler(CommandHandler("high", on_high, pass_args=True))
 	dispatcher.add_handler(CommandHandler("low", on_low, pass_args=True))
 	dispatcher.add_handler(CommandHandler("get", on_get, pass_args=True))
